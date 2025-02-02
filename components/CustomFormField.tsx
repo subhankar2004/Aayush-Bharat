@@ -16,6 +16,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Control } from "react-hook-form";
 import { FormFieldType } from "./forms/PatientForm";
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import { set } from "zod";
+import { Select, SelectContent, SelectTrigger, SelectValue } from "./ui/select";
+import { Textarea } from "./ui/textarea";
 
 interface CustomProp {
   fieldType: FormFieldType;
@@ -39,7 +44,7 @@ const RenderField = ({
   field: any;
   props: CustomProp;
 }) => {
-  const { fieldType, iconSrc, iconAlt, placeholder, disabled } = props;
+  const { fieldType, iconSrc, iconAlt, placeholder, disabled,showTimeSelect,renderSkeleton } = props;
 
   switch (fieldType) {
     case FormFieldType.INPUT:
@@ -80,6 +85,68 @@ const RenderField = ({
             />
           </FormControl>
         )
+
+        case FormFieldType.DATE_PICKER:
+           return (
+            <div className="flex rounded-md border border-dark-500">
+              <Image
+              src='/assets/icons/calendar.svg'
+              width={24}
+              height={24}
+              alt="calender"
+              className="ml-2"
+              />
+              <FormControl>
+                <DatePicker
+                  className="shad-input border-0"
+                  selected={field.value}
+                  onChange={(date)=>field.onChange(date)}
+                  showTimeSelect={showTimeSelect}
+                  dateFormat={props.dateFormat}
+                  timeInputLabel="Time:"
+                  wrapperClassName="date-picker-wrapper"
+                />
+              </FormControl>
+            </div>
+           )
+
+           case FormFieldType.SKELETON:
+            return (
+              renderSkeleton ? renderSkeleton(field) : null
+            )
+
+            case FormFieldType.SELECT:
+              return (
+                <FormControl>
+                  <Select onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  
+                  >
+                    <FormControl className='shad-select-trigger'>
+                    <SelectTrigger>
+                    <SelectValue placeholder={placeholder} />
+                    </SelectTrigger>
+                    </FormControl>
+                  <SelectContent className="shad-select-content">
+                    {props.children}
+                  </SelectContent>
+                  </Select>
+                </FormControl>
+
+              )
+
+              case FormFieldType.TEXTAREA:
+                return (
+                  <FormControl>
+                   <Textarea placeholder={placeholder}
+                   {...field}
+                   className="shad-textArea"
+                   disabled={props.disabled}
+                   >
+
+                   </Textarea>
+                  </FormControl>
+                )
     default:
       break;
   }

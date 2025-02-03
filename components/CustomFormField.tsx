@@ -21,6 +21,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { set } from "zod";
 import { Select, SelectContent, SelectTrigger, SelectValue } from "./ui/select";
 import { Textarea } from "./ui/textarea";
+import { Checkbox } from "./ui/checkbox";
 
 interface CustomProp {
   fieldType: FormFieldType;
@@ -70,7 +71,25 @@ const RenderField = ({
         </div>
       );
     case FormFieldType.CHECKBOX:
-      return <input type="checkbox" {...field} />;
+     return (<FormControl>
+      <div className="flex items-center gap-4">
+      <Checkbox
+      id={props.name}
+      checked={field.value}
+      onCheckedChange={field.onChange}
+      disabled={disabled}
+      />
+      <label htmlFor={props.name}
+      className="checkbox-label"
+      >
+       {props.label}
+         
+      </label>
+      
+      
+      </div>
+     </FormControl> 
+     )
       case FormFieldType.PHONE_INPUT:
         return (
           <FormControl>

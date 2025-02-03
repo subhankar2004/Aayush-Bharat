@@ -15,8 +15,8 @@ const Register= async ({params:{userId}}:SearchParamProps) => {
      {/*TODO: OTP Verification | PasskeyModal*/}
 
       
-      <section className="remove-scrollbar container my-auto ">
-        <div className="sub-container max-w-[496px]">
+      <section className="remove-scrollbar container  ">
+        <div className="sub-container max-w-[860px] flex-1 flex-col y-10">
           <Image
             className="mb-12 h-10 w-fit rounded-md"
             src="/assets/icons/logo-full.svg"

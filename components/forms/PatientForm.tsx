@@ -9,7 +9,7 @@ import {
 import CustomFormField from "../CustomFormField";
 import SubmitButton from "../SubmitButton";
 import React from "react";
-import { UserFormvalidation as formSchema } from "@/app/lib/validation";
+import { UserFormValidation as formSchema } from "@/app/lib/validation";
 import { useRouter } from "next/navigation";
 import { createUser } from "@/app/lib/actions/patient.actions";
 

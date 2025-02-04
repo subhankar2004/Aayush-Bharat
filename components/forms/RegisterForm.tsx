@@ -62,6 +62,7 @@ const RegisterForm = ({user}:{user:User}) => {
         userId: user.$id,
         birthDate: new Date(values.birthDate),
         identificationDocument: formData,
+        InsurancePolicyNumber: values.InsurancePolicyNumber,  // Ensure correct casing
       }
       //@ts-ignore
       const patient = await registerPatient(patientData);
@@ -75,6 +76,7 @@ const RegisterForm = ({user}:{user:User}) => {
       setIsLoading(false);
     }
   }
+  
 
   return (
     <Form {...form}>
@@ -235,13 +237,13 @@ const RegisterForm = ({user}:{user:User}) => {
             placeholder="Life Insurance Policy (LIC)"
           />
 
-          <CustomFormField
-            fieldType={FormFieldType.INPUT}
-            control={form.control}
-            name="insurancePolicyNumber"
-            label="InsurancePolicyNumber"
-            placeholder="ABC0123456789"
-          />
+<CustomFormField
+  fieldType={FormFieldType.INPUT}
+  control={form.control}
+  name="InsurancePolicyNumber"  // Changed casing to match DB
+  label="InsurancePolicyNumber"
+  placeholder="ABC0123456789"
+/>
         </div>
 
         <div className="flex flex-col gap-6 xl:flex-row">
@@ -253,13 +255,13 @@ const RegisterForm = ({user}:{user:User}) => {
             placeholder="Mushrooms , lemon , dust etc"
           />
 
-          <CustomFormField
-            fieldType={FormFieldType.TEXTAREA}
-            control={form.control}
-            name="currentMedications"
-            label="CurrentMedications"
-            placeholder="Paracetamol 500mg etc"
-          />
+<CustomFormField
+  fieldType={FormFieldType.TEXTAREA}
+  control={form.control}
+  name="currentMedication"  // Changed from currentMedications
+  label="CurrentMedications"
+  placeholder="Paracetamol 500mg etc"
+/>
         </div>
 
         <div className="flex flex-col gap-6 xl:flex-row">

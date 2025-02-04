@@ -26,7 +26,7 @@ import { IdentificationTypes } from "@/constants";
 import FileUploader from "../FileUploader";
 import { registerPatient } from "@/app/lib/actions/patient.actions";
 
-const RegisterForm = ({user}:{user:User}) => {
+const RegisterForm = ({ user }: { user: User }) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const router = useRouter();
 
@@ -44,10 +44,10 @@ const RegisterForm = ({user}:{user:User}) => {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof PatientFormValidation>) {
     setIsLoading(true);
-  
+
     let formData;
-    
-    if(values.identificationDocument && values.identificationDocument.length > 0){
+
+    if (values.identificationDocument && values.identificationDocument.length > 0) {
       formData = new FormData();
       const blobFile = new Blob([values.identificationDocument[0]], {
         type: values.identificationDocument[0].type,
@@ -55,7 +55,7 @@ const RegisterForm = ({user}:{user:User}) => {
       formData.append('blobFile', blobFile);
       formData.append('fileName', values.identificationDocument[0].name);
     }
-  
+
     try {
       const patientData = {
         ...values,
@@ -66,7 +66,7 @@ const RegisterForm = ({user}:{user:User}) => {
       }
       //@ts-ignore
       const patient = await registerPatient(patientData);
-      if(patient){
+      if (patient) {
         console.log("Patient created successfully:", patient);
         router.push(`/patients/${user.$id}/new-appointment`);
       }
@@ -76,7 +76,7 @@ const RegisterForm = ({user}:{user:User}) => {
       setIsLoading(false);
     }
   }
-  
+
 
   return (
     <Form {...form}>
@@ -88,7 +88,7 @@ const RegisterForm = ({user}:{user:User}) => {
 
         <section className=" space-y-4">
           <div className="mb-9 space-y-1">
-          <h2 className="sub-header text-3xl">Personal Information</h2>
+            <h2 className="sub-header text-3xl">Personal Information</h2>
           </div>
         </section>
 
@@ -182,8 +182,8 @@ const RegisterForm = ({user}:{user:User}) => {
           <CustomFormField
             fieldType={FormFieldType.INPUT}
             control={form.control}
-            name="emergencyContact"
-            label="EmergencyContact"
+            name="emergencyContactName"
+            label="EmergencyContactName"
             placeholder="Guardian's name"
           />
 
@@ -237,13 +237,13 @@ const RegisterForm = ({user}:{user:User}) => {
             placeholder="Life Insurance Policy (LIC)"
           />
 
-<CustomFormField
-  fieldType={FormFieldType.INPUT}
-  control={form.control}
-  name="InsurancePolicyNumber"  // Changed casing to match DB
-  label="InsurancePolicyNumber"
-  placeholder="ABC0123456789"
-/>
+          <CustomFormField
+            fieldType={FormFieldType.INPUT}
+            control={form.control}
+            name="InsurancePolicyNumber"  // Changed casing to match DB
+            label="InsurancePolicyNumber"
+            placeholder="ABC0123456789"
+          />
         </div>
 
         <div className="flex flex-col gap-6 xl:flex-row">
@@ -255,13 +255,13 @@ const RegisterForm = ({user}:{user:User}) => {
             placeholder="Mushrooms , lemon , dust etc"
           />
 
-<CustomFormField
-  fieldType={FormFieldType.TEXTAREA}
-  control={form.control}
-  name="currentMedication"  // Changed from currentMedications
-  label="CurrentMedications"
-  placeholder="Paracetamol 500mg etc"
-/>
+          <CustomFormField
+            fieldType={FormFieldType.TEXTAREA}
+            control={form.control}
+            name="currentMedication"  // Changed from currentMedications
+            label="CurrentMedications"
+            placeholder="Paracetamol 500mg etc"
+          />
         </div>
 
         <div className="flex flex-col gap-6 xl:flex-row">
@@ -296,7 +296,7 @@ const RegisterForm = ({user}:{user:User}) => {
           placeholder="Select a Identification Type"
         >
           {IdentificationTypes.map((type) => (
-            <SelectItem key={type} value={type}> 
+            <SelectItem key={type} value={type}>
               {type}
             </SelectItem>
           ))}
@@ -318,7 +318,7 @@ const RegisterForm = ({user}:{user:User}) => {
           placeholder="Select Gender"
           renderSkeleton={(field) => (
             <FormControl>
-              <FileUploader files={field.value} onChange={field.onChange}/>
+              <FileUploader files={field.value} onChange={field.onChange} />
             </FormControl>
           )}
         />
@@ -349,7 +349,7 @@ const RegisterForm = ({user}:{user:User}) => {
           name="privacyConsent"
           label="I consent to privacy policy"
         />
-        
+
         <SubmitButton isLoading={isLoading} >Get Started</SubmitButton>
       </form>
     </Form>

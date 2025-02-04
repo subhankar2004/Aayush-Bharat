@@ -45,7 +45,7 @@ export const PatientFormValidation = z.object({
     .string()
     .min(2, "Insurance name must be at least 2 characters")
     .max(50, "Insurance name must be at most 50 characters"),
-    InsurancePolicyNumber: z  // Changed casing to match DB
+  InsurancePolicyNumber: z  // Changed casing to match DB
     .string()
     .min(2, "Policy number must be at least 2 characters")
     .max(50, "Policy number must be at most 50 characters"),
@@ -114,6 +114,6 @@ export function getAppointmentSchema(type: string) {
       return CancelAppointmentSchema;
     default:
       return ScheduleAppointmentSchema;
- }
+  }
 }
 

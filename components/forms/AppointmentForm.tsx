@@ -9,10 +9,11 @@ import SubmitButton from "../SubmitButton";
 import React from "react";
 import { getAppointmentSchema } from "@/app/lib/validation";
 import { useRouter } from "next/navigation";
-import { createAppointment } from "@/app/lib/actions/appointment.actions";
+import { createAppointment, updateAppointment } from "@/app/lib/actions/appointment.actions";
 import { Doctors } from "@/constants";
 import { SelectItem } from "../ui/select";
 import Image from "next/image";
+import { Appointment } from "@/app/types/appwrite.types";
 
 export enum FormFieldType {
   INPUT = "input",
@@ -28,10 +29,14 @@ const AppointmentForm = ({
   userId,
   patientId,
   type,
+  appointment,
+  setOpen
 }: {
   userId: string;
   patientId: string;
   type: "create" | "cancel" | "schedule";
+  appointment?: Appointment;
+  setOpen: (open: boolean) => void;
 }) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const router = useRouter();
@@ -42,18 +47,20 @@ const AppointmentForm = ({
   const form = useForm<z.infer<typeof AppointmentFormValidation>>({
     resolver: zodResolver(AppointmentFormValidation),
     defaultValues: {
-      primaryPhysician: "",
-      schedule: new Date(),
-      reason: "",
-      note: "",
-      cancellationReason: "",
+      primaryPhysician: appointment ? appointment?.primaryPhysician : "",
+      schedule: appointment
+        ? new Date(appointment?.schedule!)
+        : new Date(Date.now()),
+      reason: appointment ? appointment.reason : "",
+      note: appointment?.note || "",
+      cancellationReason: appointment?.cancellationReason || "",
     },
   });
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof AppointmentFormValidation>) {
     setIsLoading(true);
-  
+
     let status: Status;
     switch (type) {
       case 'schedule':
@@ -66,7 +73,7 @@ const AppointmentForm = ({
         status = 'pending';
         break;
     }
-  
+
     try {
       if (type === 'create' && patientId) {
         const appointmentData: CreateAppointmentParams = {
@@ -79,10 +86,29 @@ const AppointmentForm = ({
           status,
           cancellationReason: "", // Default value to avoid missing field
         };
-  
+
         const appointment = await createAppointment(appointmentData);
         if (appointment) {
           router.push(`/patients/${userId}/new-appointment/success?appointmentId=${appointment.$id}`);
+        }
+      } else {
+        const appointmentToUpdate = {
+          userId,
+          appointmentId: appointment?.$id!,
+          appointment: {
+            primaryPhysician: values.primaryPhysician,
+            schedule: new Date(values.schedule),
+            status: status as Status,
+            cancellationReason: values.cancellationReason,
+          },
+          type,
+        };
+
+        const updatedAppointment = await updateAppointment(appointmentToUpdate);
+
+        if (updatedAppointment) {
+          setOpen && setOpen(false);
+          form.reset();
         }
       }
     } catch (err) {
@@ -91,13 +117,13 @@ const AppointmentForm = ({
       setIsLoading(false);
     }
   }
-  
+
 
   // Determine button label based on type
-  const buttonLabel = type === 'cancel' 
-    ? 'Cancel Appointment' 
-    : (type === 'create' 
-      ? 'Create Appointment' 
+  const buttonLabel = type === 'cancel'
+    ? 'Cancel Appointment'
+    : (type === 'create'
+      ? 'Create Appointment'
       : 'Schedule Appointment');
 
   return (
@@ -179,11 +205,10 @@ const AppointmentForm = ({
 
         <SubmitButton
           isLoading={isLoading}
-          className={`${
-            type === "cancel"
-              ? "shad-danger-btn w-full"
-              : "shad-primary-btn w-full"
-          }`}
+          className={`${type === "cancel"
+            ? "shad-danger-btn w-full"
+            : "shad-primary-btn w-full"
+            }`}
         >
           {buttonLabel}
         </SubmitButton>

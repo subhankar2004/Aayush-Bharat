@@ -42,6 +42,8 @@ export const createAppointment = async (appointment: CreateAppointmentParams) =>
       }
     );
 
+    console.log("Appointment created successfully:", newAppointment.$id);
+
     // Fetch patient details for notifications
     const patient = await databases.getDocument(
       DATABASE_ID!,
@@ -54,29 +56,49 @@ export const createAppointment = async (appointment: CreateAppointmentParams) =>
     const appointmentTime = new Date(appointment.schedule).toLocaleTimeString();
 
     // Send SMS notification
-    await sendAppointmentSMS({
-      patientName: patient.name,
-      patientPhone: patient.phone,
-      doctorName: appointment.primaryPhysician,
-      doctorSpecialization: "General Medicine", // You might want to fetch this from doctor details
-      appointmentDate,
-      appointmentTime,
-      appointmentId: newAppointment.$id,
-    });
+    try {
+      const smsResult = await sendAppointmentSMS({
+        patientName: patient.name,
+        patientPhone: patient.phone,
+        doctorName: appointment.primaryPhysician,
+        doctorSpecialization: "General Medicine", // You might want to fetch this from doctor details
+        appointmentDate,
+        appointmentTime,
+        appointmentId: newAppointment.$id,
+      });
+
+      if (smsResult.success) {
+        console.log("SMS notification sent successfully:", smsResult.messageId);
+      } else {
+        console.error("Failed to send SMS notification:", smsResult.error);
+      }
+    } catch (smsError) {
+      console.error("Error sending SMS notification:", smsError);
+    }
 
     // Send Email notification
-    await sendAppointmentEmail({
-      patientName: patient.name,
-      patientEmail: patient.email,
-      patientPhone: patient.phone,
-      patientAddress: patient.address,
-      doctorName: appointment.primaryPhysician,
-      doctorSpecialization: "General Medicine", // You might want to fetch this from doctor details
-      appointmentDate,
-      appointmentTime,
-      appointmentId: newAppointment.$id,
-      reason: appointment.reason || "",
-    });
+    try {
+      const emailResult = await sendAppointmentEmail({
+        patientName: patient.name,
+        patientEmail: patient.email,
+        patientPhone: patient.phone,
+        patientAddress: patient.address,
+        doctorName: appointment.primaryPhysician,
+        doctorSpecialization: "General Medicine", // You might want to fetch this from doctor details
+        appointmentDate,
+        appointmentTime,
+        appointmentId: newAppointment.$id,
+        reason: appointment.reason || "",
+      });
+
+      if (emailResult.success) {
+        console.log("Email notification sent successfully:", emailResult.messageId);
+      } else {
+        console.error("Failed to send email notification:", emailResult.error);
+      }
+    } catch (emailError) {
+      console.error("Error sending email notification:", emailError);
+    }
 
     return newAppointment;
   } catch (error) {

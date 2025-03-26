@@ -16,9 +16,8 @@ import {
 import { parseStringify } from "../utils";
 import { Appointment } from "@/app/types/appwrite.types";
 import { revalidatePath } from "next/cache";
-
-
-
+import { sendAppointmentSMS } from "@/lib/twilio";
+import { sendAppointmentEmail } from "@/lib/email";
 
 export const createAppointment = async (appointment: CreateAppointmentParams) => {
   try {
@@ -42,6 +41,42 @@ export const createAppointment = async (appointment: CreateAppointmentParams) =>
         cancellationReason: appointment.reason || "", // Ensure field is provided
       }
     );
+
+    // Fetch patient details for notifications
+    const patient = await databases.getDocument(
+      DATABASE_ID!,
+      PATIENT_COLLECTION_ID!,
+      appointment.patient
+    );
+
+    // Format date and time for notifications
+    const appointmentDate = new Date(appointment.schedule).toLocaleDateString();
+    const appointmentTime = new Date(appointment.schedule).toLocaleTimeString();
+
+    // Send SMS notification
+    await sendAppointmentSMS({
+      patientName: patient.name,
+      patientPhone: patient.phone,
+      doctorName: appointment.primaryPhysician,
+      doctorSpecialization: "General Medicine", // You might want to fetch this from doctor details
+      appointmentDate,
+      appointmentTime,
+      appointmentId: newAppointment.$id,
+    });
+
+    // Send Email notification
+    await sendAppointmentEmail({
+      patientName: patient.name,
+      patientEmail: patient.email,
+      patientPhone: patient.phone,
+      patientAddress: patient.address,
+      doctorName: appointment.primaryPhysician,
+      doctorSpecialization: "General Medicine", // You might want to fetch this from doctor details
+      appointmentDate,
+      appointmentTime,
+      appointmentId: newAppointment.$id,
+      reason: appointment.reason || "",
+    });
 
     return newAppointment;
   } catch (error) {

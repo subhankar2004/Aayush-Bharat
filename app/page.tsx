@@ -6,11 +6,13 @@ import Link from "next/link";
 import PasskeyModal from "@/components/PasskeyModal";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import LoadingAnimation from "@/components/LoadingAnimation";
 
 export default function Home() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [showAdminModal, setShowAdminModal] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const adminParam = searchParams.get('admin');
@@ -19,31 +21,53 @@ export default function Home() {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 2000); // Adjust time as needed
+  }, []);
+
   const handleAdminAccess = () => {
     setShowAdminModal(true);
   };
 
+  if (loading) {
+    return <LoadingAnimation />;
+  }
+
   return (
     <div className="flex h-screen max-h-screen">
       {showAdminModal && <PasskeyModal onClose={() => setShowAdminModal(false)} />}
-      
+
       <section className="remove-scrollbar container my-auto">
-        <div className="sub-container max-w-[496px]">
-          <Image
-            className="mb-12 h-10 w-fit rounded-md"
-            src="/assets/icons/logo-full.svg"
-            alt="logo"
-            width={1000}
-            height={1000}
-          />
-          <PatientForm />
+        <div className="sub-container max-w-[496px] text-center">
           
+          {/* Overlapping Logo Container */}
+          <div className="relative w-32 h-32 mx-auto mb-12">
+            {/* Outer Logo */}
+            <Image
+              className="absolute top-0 left-0 w-full h-full"
+              src="/assets/icons/logo-outer.png"
+              alt="logo outer"
+              width={1000}
+              height={1000}
+            />
+            {/* Inner Logo */}
+            <Image
+              className="absolute top-0 left-0 w-full h-full"
+              src="/assets/icons/logo-center.png"
+              alt="logo center"
+              width={1000}
+              height={1000}
+            />
+          </div>
+
+          <PatientForm />
+
           <div className="text-14-regular mt-20 flex justify-between">
             <p className="justify-items-end text-dark-600 xl:text-left">
               © 2025 Aayush Bharat. All rights reserved
             </p>
-            <button 
-              onClick={handleAdminAccess} 
+            <button
+              onClick={handleAdminAccess}
               className="text-blue-500 hover:underline"
             >
               Admin
@@ -62,4 +86,6 @@ export default function Home() {
     </div>
   );
 }
+
+
 

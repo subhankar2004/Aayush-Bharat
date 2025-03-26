@@ -133,31 +133,37 @@ const RegisterForm = ({ user }: { user: User }) => {
             placeholder="+91 9938989405"
           />
 
-          <CustomFormField
-            fieldType={FormFieldType.SKELETON}
-            control={form.control}
-            name="gender"
-            label="Gender"
-            placeholder="Select Gender"
-            renderSkeleton={(field) => (
-              <FormControl>
-                <RadioGroup
-                  className="flex h-11 gap-6 xl:justify-between"
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  {GenderOptions.map((option) => (
-                    <div key={option} className="flex items-center space-x-2">
-                      <RadioGroupItem value={option} id={option} />
-                      <Label htmlFor={option} className="cursor-pointer">
-                        {option}
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              </FormControl>
-            )}
-          />
+<CustomFormField
+  fieldType={FormFieldType.SKELETON}
+  control={form.control}
+  name="gender"
+  label="Gender"
+  placeholder="Select Gender"
+  renderSkeleton={(field) => (
+    <FormControl>
+      <RadioGroup
+        className="flex h-11 gap-6 xl:justify-between"
+        onValueChange={field.onChange}
+        defaultValue={field.value}
+      >
+        {GenderOptions.map((option) => (
+          <div key={option} className="flex items-center gap-2">
+            <RadioGroupItem
+              value={option}
+              id={option}
+              checked={field.value === option}
+              className="w-5 h-5 border border-gray-400 rounded-full checked:bg-primary checked:border-primary focus:ring-2 focus:ring-primary"
+            />
+            <Label htmlFor={option} className="cursor-pointer text-white">
+              {option}
+            </Label>
+          </div>
+        ))}
+      </RadioGroup>
+    </FormControl>
+  )}
+/>
+
         </div>
 
         <div className="flex flex-col gap-6 xl:flex-row">

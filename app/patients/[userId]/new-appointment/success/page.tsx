@@ -1,100 +1,104 @@
-import { getAppointment } from '@/app/lib/actions/appointment.actions'
-import { formatDateTime } from '@/app/lib/utils'
-import { Button } from '@/components/ui/button'
-import { Doctors } from '@/constants'
-import Image from 'next/image'
-import Link from 'next/link'
-import React from 'react'
+import { CheckCircle2 } from "lucide-react";
+import Link from "next/link";
+import { getAppointment } from "@/app/lib/actions/appointment.actions";
+import { Doctors } from "../../../../lib/constants";
+import ChatBot from "@/components/ChatBot";
 
-//http://localhost:3001/patients/67a040f50033ad146e3c/new-appointment/success?appointmentId=67a21c7300325ff38483
+interface SearchParamProps {
+  params: {
+    userId: string;
+  };
+  searchParams: { [key: string]: string | string[] | undefined };
+}
 
-const Success = async ({ params: { userId }, searchParams }: SearchParamProps) => {
-  const appointmentId = (searchParams?.appointmentId as string) || '';
+const Success = async ({ params, searchParams }: SearchParamProps) => {
+  const userId = params.userId;
+  const appointmentId = (searchParams?.appointmentId as string) || "";
   const appointment = await getAppointment(appointmentId);
-  const doctor = Doctors.find(doctor => doctor.name === appointment.primaryPhysician);
+  const doctor = Doctors.find(
+    (doctor) => doctor.name === appointment.primaryPhysician
+  );
+
+  // Format the date
+  const formattedDate = new Date(appointment.schedule).toLocaleDateString();
+  // Format the time
+  const formattedTime = new Date(appointment.schedule).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-[#131619] px-6">
-      <div className="w-full max-w-lg rounded-lg bg-[#1E2226] p-8 shadow-lg">
-        {/* Logo */}
-        <Link href="/" className="flex justify-center">
-          <Image
-            src="/assets/icons/logo-full.svg"
-            height={1000}
-            width={1000}
-            alt="logo"
-            className="h-10 w-fit"
-          />
-        </Link>
+    <div className="min-h-screen bg-[#131619] py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-[#1a1d21] rounded-lg shadow-lg overflow-hidden border border-gray-800">
+          <div className="px-6 py-8">
+            <div className="text-center">
+              <CheckCircle2 className="mx-auto h-16 w-16 text-green-500" />
+              <h2 className="mt-4 text-2xl font-bold text-white">
+                Appointment Booked Successfully!
+              </h2>
+              <p className="mt-2 text-gray-300">
+                Your appointment has been confirmed. Here are the details:
+              </p>
+            </div>
 
-        {/* Success Message */}
-        <section className="mt-6 flex flex-col items-center text-center">
-          <Image
-            src="/assets/gifs/success.gif"
-            height={300}
-            width={300}
-            alt="success"
-            className="mb-4"
-          />
-          <h2 className="text-2xl font-semibold text-white">
-            Your <span className="text-green-500">appointment request</span> has been successfully submitted!
-          </h2>
-          <p className="mt-2 text-gray-300">We'll be in touch with you soon.</p>
-        </section>
+            <div className="mt-8 border-t border-gray-800 pt-8">
+              <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                <div className="sm:col-span-1">
+                  <dt className="text-sm font-medium text-gray-400">Doctor</dt>
+                  <dd className="mt-1 text-sm text-white">
+                    {doctor?.name || "Not specified"}
+                  </dd>
+                </div>
+                <div className="sm:col-span-1">
+                  <dt className="text-sm font-medium text-gray-400">
+                    Appointment Date
+                  </dt>
+                  <dd className="mt-1 text-sm text-white">{formattedDate}</dd>
+                </div>
+                <div className="sm:col-span-1">
+                  <dt className="text-sm font-medium text-gray-400">
+                    Appointment Time
+                  </dt>
+                  <dd className="mt-1 text-sm text-white">{formattedTime}</dd>
+                </div>
+                <div className="sm:col-span-1">
+                  <dt className="text-sm font-medium text-gray-400">
+                    Appointment ID
+                  </dt>
+                  <dd className="mt-1 text-sm text-white">{appointment.$id}</dd>
+                </div>
+                <div className="sm:col-span-2">
+                  <dt className="text-sm font-medium text-gray-400">
+                    Reason for Visit
+                  </dt>
+                  <dd className="mt-1 text-sm text-white">
+                    {appointment.reason}
+                  </dd>
+                </div>
+              </dl>
+            </div>
 
-        {/* Appointment Details */}
-        <section className="mt-6 rounded-lg bg-[#25292D] p-4 shadow">
-          <p className="mb-3 text-lg font-medium text-gray-200">Appointment Details</p>
-
-          <div className="flex items-center gap-3">
-            {doctor && (
-              <div className="flex items-center gap-3">
-                <Image
-                  src={doctor.image}
-                  height={50}
-                  width={50}
-                  alt="doctor"
-                  className="rounded-full border border-gray-500"
-                />
-                <p className="text-gray-300">Dr. {doctor.name}</p>
-              </div>
-            )}
+            <div className="mt-8 flex justify-center space-x-4">
+              <Link
+                href={`/patients/${userId}/dashboard`}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#131619] hover:bg-[#1a1d21] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#131619] border-gray-700"
+              >
+                Go to Dashboard
+              </Link>
+              <Link
+                href={`/patients/${userId}/new-appointment`}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                Book Another Appointment
+              </Link>
+            </div>
           </div>
-
-          <div className="mt-3 flex items-center gap-2">
-            <Image
-              src="/assets/icons/calendar.svg"
-              height={24}
-              width={24}
-              alt="calendar"
-            />
-            <p className="text-gray-300">{formatDateTime(appointment.schedule).dateTime}</p>
-          </div>
-        </section>
-
-        {/* New Appointment Button */}
-        <div className="mt-6 flex justify-center">
-          <Button
-            variant="outline"
-            className="px-6 py-2 bg-green-600 text-white hover:bg-green-500"
-            asChild
-          >
-            <Link href={`/patients/${userId}/new-appointment`}>
-              New Appointment
-            </Link>
-          </Button>
         </div>
-
-        {/* Footer */}
-        <p className="mt-6 text-center text-sm text-gray-400">
-          © 2025 Aayush Bharat. All rights reserved.
-        </p>
       </div>
+      <ChatBot patientId={userId} appointmentId={appointmentId} />
     </div>
   );
 };
 
 export default Success;
-
-
-

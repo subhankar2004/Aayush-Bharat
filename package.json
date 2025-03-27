@@ -22,6 +22,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
+    "groq-sdk": "^0.17.0",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.473.0",
     "motion": "^12.6.1",

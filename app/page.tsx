@@ -5,10 +5,18 @@ import PatientForm from "@/components/forms/PatientForm";
 import Link from "next/link";
 import PasskeyModal from "@/components/PasskeyModal";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import LoadingAnimation from "@/components/LoadingAnimation";
 
 export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomeComponent />
+    </Suspense>
+  );
+}
+
+function HomeComponent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [showAdminModal, setShowAdminModal] = useState(false);
